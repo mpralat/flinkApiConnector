@@ -1,0 +1,50 @@
+{
+   "products": [{
+       "ID": "number",
+       "name": "string",
+       "unit": "string",
+       "amount": "number",
+       "pricePerUnit": "number",
+       "producer": {
+           "ID": "number",
+           "name": "string"
+       },
+       "countryOfOrigin": "string",
+       "coordinates": {
+           "lat": "number",
+           "lon": "number"
+       },
+       "categories": [{
+           "ID": "number",
+           "name": "string"
+       }],
+       "attributes": [{
+           "ID": "number",
+           "name": "string"
+       }],
+       "discounted": "boolean"
+   }],
+   "client": {
+       "age": "number",
+       "sex": "string",
+       "education": "string",
+       "wealth": "string",
+       "coordinates": {
+           "lat": "number",
+           "lon": "number"
+       }
+},
+   "shop": {
+       "ID": "number",
+       "name": "string",
+       "coordinates": {
+           "lat": "number",
+           "lon": "number"
+       }
+   },
+   "cashier": {
+       "ID": "number",
+       "name": "string",
+       "surname": "string"
+   }
+}
