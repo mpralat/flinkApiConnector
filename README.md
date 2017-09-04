@@ -29,7 +29,7 @@ cd kibana-5.5.2-linux-x86_64
 ```
 
 ## Step 4: Run flink app
-In another terminal, run
+Run the project in your IDE, or run
 ```
 mvn exec:java -Dexec.mainClass="org.flinkproject.MainClass"
 ```
@@ -53,3 +53,4 @@ runs all three, then waits for Ctrl-C to kill them all.
 chmod +x run_all.sh
 ./run_all.sh
 ```
+It does not run flink app though, need to run this one yourself ;_;
