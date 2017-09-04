@@ -10,8 +10,6 @@
 
 
     <name>Flink API connector</name>
-
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flink.version>1.3.0</flink.version>
@@ -82,6 +80,13 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <!--ELASTICSEARCH-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-elasticsearch5_2.10</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>
