@@ -25,7 +25,13 @@ public class main {
         // Parse input JSON and sum M/F
         DataStream<Tuple2<String, Integer>> ds = stream.flatMap(new SelectJSONFlatMap()).keyBy(0).sum(1);
 
-        DataStream<Tuple2<String, Integer>> price = stream.flatMap(new PriceCalculator()).keyBy(0).sum(1);
+        // Total price calculating
+        DataStream<Tuple2<String, Integer>> price = stream.flatMap(new PriceCalculator()).keyBy(0).reduce(new ReduceFunction<Tuple2<String, Integer>>() {
+            @Override
+            public Tuple2<String, Integer> reduce(Tuple2<String, Integer> v1, Tuple2<String, Integer> v2) throws Exception {
+                return new Tuple2<>("Sum", v1.f1 + v2.f1);
+            }
+        });
 
         price.print();
         ds.print();
@@ -37,7 +43,7 @@ public class main {
         public void flatMap(String data, Collector<Tuple2<String, Integer>> out) throws Exception {
             JSONObject obj = new JSONObject(data);
             JSONObject client = obj.getJSONObject("client");
-            out.collect(new Tuple2(client.getString("sex"), 1));
+            out.collect(new Tuple2<>(client.getString("sex"), 1));
         }
     }
 
@@ -49,7 +55,7 @@ public class main {
             for (int i = 0; i < products.length(); i++) {
                 JSONObject item = products.getJSONObject(i);
                 Integer price = item.getInt("amount") * item.getInt("pricePerUnit");
-                out.collect(new Tuple2(item.getString("name"), price));
+                out.collect(new Tuple2<>(item.getString("name"), price));
             }
         }
     }
