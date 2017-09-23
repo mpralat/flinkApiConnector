@@ -10,7 +10,10 @@ import org.apache.sling.commons.json.JSONObject;
 
 public class StreamTransformer {
 
-//  Total price counter
+    /***
+     * @param stream DataStream that represents incoming transactions.
+     * @return Total sum calculated for all products of a single transaction.
+     */
     public static DataStream<Tuple2<String, Integer>> countTotalPrice(DataStream<String> stream) {
         return stream.flatMap(new PriceCalculator()).keyBy(0).reduce(new ReduceFunction<Tuple2<String, Integer>>() {
             @Override
@@ -26,12 +29,17 @@ public class StreamTransformer {
             JSONArray products = obj.getJSONArray("products");
             for (int i = 0; i < products.length(); i++) {
                 JSONObject item = products.getJSONObject(i);
-                Integer price = item.getInt("amount") * item.getInt("pricePerUnit");
+                int price = item.getInt("amount") * item.getInt("pricePerUnit");
                 out.collect(new Tuple2<>(item.getString("name"), price));
             }
         }
     }
 
+    /***
+     *
+     * @param stream DataStream that represents incoming transaction.
+     * @return Tuple indicating the sex of the buyer.
+     */
 //  Client sex counting
     public static DataStream<Tuple2<String, Integer>> countClientSex(DataStream<String> stream) {
         return stream.flatMap(new ClientSexCounter()).keyBy(0).sum(1);

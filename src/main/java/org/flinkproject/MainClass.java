@@ -3,16 +3,12 @@ package org.flinkproject;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-
 import org.apache.flink.streaming.connectors.elasticsearch5.ElasticsearchSink;
 import org.apache.log4j.BasicConfigurator;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by marta on 26.08.17.
@@ -20,29 +16,31 @@ import java.util.Map;
  */
 public class MainClass {
     public static void main(String[] args) throws Exception {
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
-        // todo parameterize
-        String url = "http://localhost:5000/hello";
-
+        // Config
+        Properties properties = new ConfigReader().getPropValues();
         // Logger init
         BasicConfigurator.configure();
+
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment();
+        String url = properties.getProperty("api_url");
 
         // Get the raw data
         DataStream<String> stream = env.addSource(new APISource(url, 100));
         // Parse input JSON and sum M/F
         DataStream<Tuple2<String, Integer>> ds = StreamTransformer.countClientSex(stream);
-
         // Total price calculating
         DataStream<Tuple2<String, Integer>> price = StreamTransformer.countTotalPrice(stream);
-
         // ELASTIC SEARCH
         Map<String, String> config = new HashMap<>();
         // This instructs the sink to emit after every element, otherwise they would be buffered
-        config.put("bulk.flush.max.actions", "10");
-        config.put("cluster.name", "elasticsearch");
+        config.put("bulk.flush.max.actions", properties.getProperty("bulk_flush_max_actions"));
+        config.put("cluster.name", properties.getProperty("cluster_name"));
 
         List<InetSocketAddress> transports = new ArrayList<>();
-        transports.add(new InetSocketAddress(InetAddress.getByName("localhost"), 9300));
+        transports.add(new InetSocketAddress(
+                InetAddress.getByName(properties.getProperty("elasticsearch_host")),
+                Integer.parseInt(properties.getProperty("elasticsearch_port")))
+        );
 
         price.addSink(new ElasticsearchSink<>(
                 config,
